@@ -126,12 +126,34 @@ Do **not** skip this step — always read the full body before writing the outpu
 
 ---
 
-## Step 5 — Check expected behavior via public docs
+## Step 5 — Check expected behavior via Appcharge docs
 
-Fetch the specific `docs.appcharge.com` page for the classified flow to determine if the described behavior is by design.
+Fetch the relevant `docs.appcharge.com` page based on the classification to determine if the described behavior is by design.
 
-- If the URL returns 404: fetch `https://docs.appcharge.com/llms.txt` first to locate the correct path, then fetch the right page.
-- If no page can be fetched, note it explicitly and advise manual verification.
+### Docs URL mapping by classification
+
+| Classification | Primary docs pages |
+|---|---|
+| **Checkout/Payments** | [Create Checkout Session API](https://docs.appcharge.com/api-reference/checkout/checkout-session/create-checkout-session) · [About the Checkout](https://docs.appcharge.com/guides/checkout/about-the-checkout) · [High-Level Flow](https://docs.appcharge.com/guides/checkout/checkout-high-level-flow) · [Set Up Your Checkout](https://docs.appcharge.com/guides/checkout/set-up-your-checkout) · [Design Your Checkout](https://docs.appcharge.com/guides/checkout/design-your-checkout) · [About Coupons](https://docs.appcharge.com/guides/checkout/coupons/about-coupons) · [Checkout Webhooks](https://docs.appcharge.com/api-reference/checkout/checkout-webhooks) |
+| **Store/Offers** | [About the Web Store](https://docs.appcharge.com/guides/webstore/about-the-webstore) · [About the Template Studio](https://docs.appcharge.com/guides/webstore/design/template-studio/about-the-template-studio) · [About Offers](https://docs.appcharge.com/guides/webstore/offers/about-offers) · [About Personalization](https://docs.appcharge.com/guides/webstore/personalization/about-personalization) · [Configure Personalization](https://docs.appcharge.com/guides/webstore/personalization/configure-personalization) · [Personalize Web Store Callback](https://docs.appcharge.com/api-reference/webstore/personalization/personalize-webstore-callback) · [Web Store High-Level Flow](https://docs.appcharge.com/guides/webstore/webstore-high-level-flow) |
+| **Award** | [About Awards](https://docs.appcharge.com/guides/checkout/awards/about-awards) · [Grant Award Callback](https://docs.appcharge.com/api-reference/checkout/awards/grant-award-callback) · [Set Up Award Notifications](https://docs.appcharge.com/guides/checkout/awards/set-up-award-notifications) |
+| **SDK Events** | [About the Events Center](https://docs.appcharge.com/guides/events/about-the-events-center) · [Events v2 Introduction](https://docs.appcharge.com/api-reference/events/v2/introduction) · [Events v1 Introduction](https://docs.appcharge.com/api-reference/events/v1/introduction) |
+| **Auth** | [About Player Authentication](https://docs.appcharge.com/guides/webstore/player-authentication/about-player-authentication) · [Set Up Player Authentication](https://docs.appcharge.com/guides/webstore/player-authentication/set-up-player-authentication) · [Authenticate Player Callback](https://docs.appcharge.com/api-reference/webstore/player-authentication/authenticate-player-callback) · [About SSO Login](https://docs.appcharge.com/guides/webstore/player-authentication/sso-login/about-sso-login) |
+| **Dashboard** | [About the Publisher Dashboard](https://docs.appcharge.com/guides/publisher-dashboard/about-the-publisher-dashboard) · [View Analytics](https://docs.appcharge.com/guides/publisher-dashboard/view-analytics) · [View Orders](https://docs.appcharge.com/guides/publisher-dashboard/view-orders) · [Manage User Roles and Permissions](https://docs.appcharge.com/guides/publisher-dashboard/manage-user-roles-and-permissions) |
+| **Mobile** | [About Payment Links](https://docs.appcharge.com/guides/payment-links/about-payment-links) · [Payment Link Flow](https://docs.appcharge.com/sdks/payment-links/payment-link-flow) · [Troubleshooting](https://docs.appcharge.com/sdks/payment-links/troubleshooting) · [Frontend SDK Introduction](https://docs.appcharge.com/sdks/checkout/frontend-sdk/introduction) |
+| **API/Reporting** | [Analytics Reporting API](https://docs.appcharge.com/api-reference/checkout/finance-and-analytics/analytics-reporting-api) · [Financial Reporting API](https://docs.appcharge.com/api-reference/checkout/finance-and-analytics/financial-reporting-api) · [Get Transactions](https://docs.appcharge.com/api-reference/checkout/finance-and-analytics/get-transactions) · [View Financial Reports](https://docs.appcharge.com/guides/publisher-dashboard/view-financial-reports) |
+
+### How to use the mapping
+
+1. Based on the classification from Step 3, fetch the **primary docs page** (first link in the row).
+2. If the specific symptom relates to a sub-topic (e.g. coupons, personalization, SSO), also fetch the more specific page.
+3. Compare the documented behavior with what the publisher is reporting. If the behavior matches the docs, it’s expected.
+
+### Fallback
+
+If the mapped URL returns 404 or the classification is `Other`, fetch `https://docs.appcharge.com/llms.txt` to locate the correct page.
+
+If no page can be fetched at all, note it explicitly in the output and advise manual verification at `https://docs.appcharge.com/`.
 
 ---
 
