@@ -12,13 +12,15 @@ description: >-
 
 Automated skill triggered by a **Zendesk bot message in Slack**.
 
+Every message in `#publishers-support-cases` from **Appcharge Support** (`U07CXNMD0Q7`) is a new Zendesk ticket notification.
+
 ---
 
 ## MCP Tools Required
 
 | Server | Tools used |
 |---|---|
-| `plugin-slack-slack` | `slack_read_thread`, `slack_send_message` |
+| `plugin-slack-slack` | `slack_read_thread`, `slack_read_channel`, `slack_send_message` |
 | `user-zendesk` | `zendesk_get_ticket`, `zendesk_get_ticket_details` |
 | `user-atlassian-mcp` | `searchConfluenceUsingCql`, `getConfluencePage`, `searchJiraIssuesUsingJql`, `getJiraIssue` |
 | `plugin-atlassian-atlassian` | `searchConfluenceUsingCql`, `searchJiraIssuesUsingJql` (alternative) |
@@ -27,33 +29,53 @@ Automated skill triggered by a **Zendesk bot message in Slack**.
 
 ## Step 1 — Extract the Zendesk ticket ID
 
-### Understanding the Zendesk bot message format
+The Appcharge Support bot uses **Slack Block Kit**. Plain text is often empty; the ticket URL is in blocks or attachments.
 
-The triggering message comes from the **Appcharge Support** Slack bot (`U07CXNMD0Q7`).
-This bot uses **Slack Block Kit** to format its messages. The Slack MCP tools (`slack_read_channel`, `slack_read_thread`, `slack_search_public`) **do NOT surface Block Kit content** — they return empty text for these messages. You cannot rely on the Slack MCP to read the bot message body.
+**Try every source below in order. Do not stop after one empty result.**
 
-### Where the ticket ID comes from
+### 1a — Trigger context (always try first)
 
-When the Cursor Automation triggers on a Slack message, it injects the **full message payload** (including Block Kit blocks and attachments) into your prompt as trigger context. The ticket URL is embedded inside the blocks/attachments.
+Scan **all** fields the automation injects: message text, blocks, attachments, `title`, `title_link`, `url`, `fallback`, action URLs, metadata, permalink.
 
-**Parse the trigger context** using this priority order:
+Match any of these patterns (case-insensitive, anywhere in the payload):
 
-1. **URL pattern** — scan the entire trigger context (blocks, attachments, fallback text, action URLs) for:
-   ```
-   https://<subdomain>.zendesk.com/agent/tickets/(\d+)
-   ```
-   This is the most reliable source. The URL is typically inside a Block Kit `section` block or an `attachment` with a `title_link` or `text` field.
+```
+zendesk\.com/agent/tickets/(\d+)
+/tickets/(\d+)
+#(\d+)
+```
 
-2. **Hash pattern** — look for `#(\d+)` in any text field within the trigger context.
+Subdomains include `appcharge.zendesk.com` and `appchargehelp.zendesk.com`.
 
-3. **Thread fallback** — if neither pattern matched in the trigger context, call `slack_read_thread` to check if a human reply in the thread mentions the ticket ID or URL. Bot messages will show empty, but human replies will contain readable text.
-   ```
-   tool: slack_read_thread (plugin-slack-slack)
-   channel_id: <channel ID from trigger>
-   message_ts: <message_ts from trigger>
-   ```
+### 1b — Slack read thread (always try second)
 
-If no ticket ID is found after all three attempts, reply to the thread:
+```
+tool: slack_read_thread (plugin-slack-slack)
+channel_id: <channel ID from trigger>
+message_ts: <message_ts of triggering message>
+response_format: detailed
+```
+
+Parse the **entire** response — text, blocks, attachments, links. Block Kit fields may appear here even when plain text is empty.
+
+### 1c — Slack read channel (third — narrow window)
+
+If 1a and 1b found nothing, read messages around the trigger timestamp:
+
+```
+tool: slack_read_channel (plugin-slack-slack)
+channel_id: <channel ID from trigger>
+oldest: <trigger message_ts minus 1 second>
+latest: <trigger message_ts plus 1 second>
+response_format: detailed
+limit: 5
+```
+
+Find the triggering message in the results and parse it the same way as 1a.
+
+### If still not found
+
+Reply to the thread:
 > ⚠️ Could not extract a Zendesk ticket ID from this message. Please share the ticket number so I can investigate.
 
 Then **stop**.
@@ -248,4 +270,4 @@ Do **not** set `reply_broadcast: true` — keep the reply in-thread only.
 - **No web searches with internal data:** never search the web using publisher IDs, player IDs, order IDs, ticket content, or any data from MCP responses.
 - **Evidence discipline:** never label something a "known issue" or "expected behavior" without citing a specific Jira ticket, Confluence page, or doc page as proof. If inferring, say "possible" or "likely" and flag as a hypothesis.
 - **Plain language:** write for a technical support person, not a developer. Avoid log field names, service names, and code-level jargon in the output.
-- **Block Kit awareness:** do NOT attempt to read Zendesk bot messages via the Slack MCP — they will return empty. Rely on the automation trigger context for the message payload.
+- **Ticket ID extraction:** always try trigger context AND Slack MCP (`slack_read_thread` with `detailed`, then `slack_read_channel`). Block Kit content may only appear in one source.
