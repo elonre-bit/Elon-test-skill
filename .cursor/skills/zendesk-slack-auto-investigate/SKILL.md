@@ -221,30 +221,44 @@ Expected behavior? [Yes/No] · Appcharge at fault? [Yes/No/Unknown] · Playbook:
 
 **Known issue?** [Yes — brief reason / No known issue found]
 
-**Summary:** [2–3 sentences max. What the publisher reported + what investigation found. Plain English, no jargon.]
+**Summary:** [One sentence, max 25 words. Lead with the likely cause or conclusion — not a play-by-play.]
 
 **Relevant links:**
 - [Link label](url) — [one-line why it matters]
 _(Omit section if nothing found)_
 ```
 
+### Summary rules
+
+- **One sentence only.** Max ~25 words.
+- **Lead with the answer** — what it probably is, not what the publisher said.
+- **Be specific** — name the publisher, symptom, environment, and likely cause in as few words as possible.
+- **No process narration** — do not explain how you investigated, what docs say in general, or list multiple hypotheses.
+- **One caveat max** — only if critical (e.g. "no order ID — unconfirmed"). Put caveats in **Relevant links**, not the summary.
+
+**Bad (too long):**
+> SpaceGo reports that a production purchase from Argentina fails with "Payment could not be processed..." They suspect ARS may be the cause. The error is a generic PSP decline. The Confluence playbook for test cards is Sandbox-only. No Order ID was included, so root cause cannot be confirmed.
+
+**Good (ticket #37405):**
+> Prod ARS card payment declined — likely a Sandbox test card used in Production; unconfirmed (no order ID).
+
 ### Known issue definition
 
-Determine **Known issue?** from any match during investigation:
+Determine **Known issue?** from any match during investigation. Keep to **one short phrase** (not a sentence):
 
 | Match type | Reply format |
 |---|---|
-| Open ACDEV Jira ticket | `Yes — [ACDEV-XXXX](link) (Open): [one plain sentence]` |
-| Done/Cancelled Jira (possible regression) | `Possible regression — [ACDEV-XXXX](link) was [Done/Cancelled]: [one sentence]` |
-| Confluence playbook with known gotcha | `Yes — documented in [Playbook Name](link): [one sentence]` |
-| Past resolution in Confluence | `Similar case resolved before — [page title](link): [how]` |
-| Nothing found | `No known issue found` |
+| Open ACDEV Jira ticket | `Yes — ACDEV-XXXX (Open)` |
+| Done/Cancelled Jira (possible regression) | `Possible regression — ACDEV-XXXX` |
+| Confluence playbook with known gotcha | `Yes — [Playbook Name](link)` |
+| Past resolution in Confluence | `Seen before — [page title](link)` |
+| Nothing found | `No` |
 
-Never say "known issue" without citing the source.
+Never say "known issue" without citing the source. Details go in **Relevant links**, not here.
 
 ### Relevant links
 
-Include up to 5 links from investigation — docs pages, Confluence playbooks, Jira tickets. One line each explaining why it matters. Omit the section entirely if nothing useful was found.
+Include up to 3 links — docs, playbooks, or Jira. Short labels only. Omit the section if nothing useful was found.
 
 ---
 
@@ -271,3 +285,4 @@ Do **not** set `reply_broadcast: true` — keep the reply in-thread only.
 - **Evidence discipline:** never label something a "known issue" or "expected behavior" without citing a specific Jira ticket, Confluence page, or doc page as proof. If inferring, say "possible" or "likely" and flag as a hypothesis.
 - **Plain language:** write for a technical support person, not a developer. Avoid log field names, service names, and code-level jargon in the output.
 - **Ticket ID extraction:** always try trigger context AND Slack MCP (`slack_read_thread` with `detailed`, then `slack_read_channel`). Block Kit content may only appear in one source.
+- **Brevity:** entire reply should fit on one phone screen. If the summary exceeds one sentence, rewrite it.
