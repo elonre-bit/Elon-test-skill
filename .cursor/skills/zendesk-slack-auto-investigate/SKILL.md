@@ -221,7 +221,10 @@ Expected behavior? [Yes/No] · Appcharge at fault? [Yes/No/Unknown] · Playbook:
 
 **Known issue?** [Yes — brief reason / No known issue found]
 
-**Summary:** [One sentence, max 25 words. Lead with the likely cause or conclusion — not a play-by-play.]
+**Summary:**
+[Line 1: what happened + likely cause]
+[Line 2: key finding — expected behavior or why]
+[Line 3 (optional): one caveat only — omit if none]
 
 **Relevant links:**
 - [Link label](url) — [one-line why it matters]
@@ -230,17 +233,19 @@ _(Omit section if nothing found)_
 
 ### Summary rules
 
-- **One sentence only.** Max ~25 words.
-- **Lead with the answer** — what it probably is, not what the publisher said.
-- **Be specific** — name the publisher, symptom, environment, and likely cause in as few words as possible.
-- **No process narration** — do not explain how you investigated, what docs say in general, or list multiple hypotheses.
-- **One caveat max** — only if critical (e.g. "no order ID — unconfirmed"). Put caveats in **Relevant links**, not the summary.
+- **Up to 3 lines.** Each line is one short sentence. No bullet points inside the summary.
+- **Line 1:** Publisher, symptom, environment, and likely cause.
+- **Line 2:** Key finding — why this is expected/unexpected or what docs/playbook say.
+- **Line 3 (optional):** One caveat only if critical (e.g. missing order ID). Omit if not needed.
+- **No process narration** — do not explain how you investigated or list multiple hypotheses.
 
 **Bad (too long):**
 > SpaceGo reports that a production purchase from Argentina fails with "Payment could not be processed..." They suspect ARS may be the cause. The error is a generic PSP decline. The Confluence playbook for test cards is Sandbox-only. No Order ID was included, so root cause cannot be confirmed.
 
 **Good (ticket #37405):**
-> Prod ARS card payment declined — likely a Sandbox test card used in Production; unconfirmed (no order ID).
+> SpaceGo prod ARS payment declined — generic PSP error.
+> Likely Sandbox test card used in Production (ARS test cards are Sandbox-only).
+> Unconfirmed — no order ID.
 
 ### Known issue definition
 
@@ -285,4 +290,4 @@ Do **not** set `reply_broadcast: true` — keep the reply in-thread only.
 - **Evidence discipline:** never label something a "known issue" or "expected behavior" without citing a specific Jira ticket, Confluence page, or doc page as proof. If inferring, say "possible" or "likely" and flag as a hypothesis.
 - **Plain language:** write for a technical support person, not a developer. Avoid log field names, service names, and code-level jargon in the output.
 - **Ticket ID extraction:** always try trigger context AND Slack MCP (`slack_read_thread` with `detailed`, then `slack_read_channel`). Block Kit content may only appear in one source.
-- **Brevity:** entire reply should fit on one phone screen. If the summary exceeds one sentence, rewrite it.
+- **Brevity:** entire reply should fit on one phone screen. Summary must not exceed 3 lines.
